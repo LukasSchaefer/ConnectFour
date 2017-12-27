@@ -15,8 +15,7 @@ public class GameMenu {
 
         Button startButton = new Button();
         startButton.setText("Start Game");
-        Game game = new Game();
-        startButton.setOnAction(event -> game.runGame());
+        startButton.setOnAction(event -> Game.runGame());
 
         Button helpButton = new Button();
         helpButton.setText("Help");
