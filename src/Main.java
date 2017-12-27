@@ -55,7 +55,7 @@ public class Main extends Application {
 
         window.setTitle("Connect Four");
 
-        Game.runGame();
+        GameMenu.runMenu();
 
         window.show();
     }

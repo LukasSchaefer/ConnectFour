@@ -17,9 +17,9 @@ import java.util.ArrayList;
 public class Game {
 
     // constant for number of columns of the board
-    private static int width = 7;
+    protected static final int WIDTH = 7;
     // constant for number of rows of the board
-    private static int height = 6;
+    protected static final int HEIGHT = 6;
 
     // constant for horizontal space between columns of the board
     private static final int HSPACE = 20;
@@ -33,7 +33,7 @@ public class Game {
     // height of pointer-area below the board
     private static final int POINTERAREAHEIGHT = 100;
 
-    public static void runGame() {
+    public static void runGame(int width, int height) {
         GameLogic gameLogic = new GameLogic(width, height);
 
         BorderPane layout = new BorderPane();
@@ -81,7 +81,6 @@ public class Game {
         gameLogic.dropDisk(Player.RED, 1);
         gameLogic.dropDisk(Player.YELLOW, 2);
         gameLogic.dropDisk(Player.RED, 2);
-        gameLogic.dropDisk(Player.YELLOW, 5);
 
         ArrayList<String> input = new ArrayList<>();
 
