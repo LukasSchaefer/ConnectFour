@@ -1,58 +1,71 @@
 import javafx.animation.AnimationTimer;
-import javafx.application.Application;
 import javafx.event.EventHandler;
-import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
-import javafx.stage.Stage;
 
 import java.util.ArrayList;
 
-public class GameStage extends Application {
+public class Game {
 
     // constant for number of columns of the board
-    private final int WIDTH = 7;
+    private static int width = 7;
     // constant for number of rows of the board
-    private final int HEIGHT = 6;
+    private static int height = 6;
 
     // constant for horizontal space between columns of the board
-    private final int HSPACE = 20;
+    private static final int HSPACE = 20;
     // constant for vertical space between rows of the board
-    private final int VSPACE = 10;
+    private static final int VSPACE = 10;
 
     // constant for radius of one circular cell in the board
     // WHEN CHANGED PNGs FOR DISKS HAVE TO BE UPDATED
-    private final int CELLRADIUS = 100;
+    private static final int CELLRADIUS = 100;
 
     // height of pointer-area below the board
-    private final int POINTERAREAHEIGHT = 100;
+    private static final int POINTERAREAHEIGHT = 100;
 
-    private GameLogic gameLogic;
+    public static void runGame() {
+        GameLogic gameLogic = new GameLogic(width, height);
 
-    public GameStage() {
-        this.gameLogic = new GameLogic(WIDTH, HEIGHT);
-    }
+        BorderPane layout = new BorderPane();
 
-    public void init(String[] args) {
-        launch(args);
-    }
+        Scene gameScene = new Scene(layout);
+        Main.window.setScene(gameScene);
 
-    @Override
-    public void start(Stage primaryStage) throws Exception {
-        primaryStage.setTitle("Connect Four");
-        Group root = new Group();
-        Scene scene = new Scene(root);
-        primaryStage.setScene(scene);
+        Main.window.setOnCloseRequest(event -> {
+            boolean answer = CancelBox.display();
+            event.consume();
+            if (answer)
+                Main.window.close();
+        });
 
-        Canvas canvas = new Canvas(HSPACE + WIDTH * (HSPACE + CELLRADIUS), VSPACE + HEIGHT * (VSPACE + CELLRADIUS) + POINTERAREAHEIGHT);
-        root.getChildren().add(canvas);
+        HBox topMenu = new HBox();
+        layout.setTop(topMenu);
 
+        // config Topbar
+        Button backButton = new Button();
+        topMenu.getChildren().add(backButton);
+        backButton.setText("Back To Menu");
+        backButton.setOnAction(event -> {
+            boolean answer = CancelBox.display();
+            if (answer)
+                GameMenu.runMenu();
+        });
+
+
+        Canvas canvas = new Canvas(HSPACE + width * (HSPACE + CELLRADIUS), VSPACE + height * (VSPACE + CELLRADIUS) + POINTERAREAHEIGHT);
+        layout.setCenter(canvas);
+
+        // config Game-Panel
         GraphicsContext gc = canvas.getGraphicsContext2D();
 
         Font font = Font.font("Times New Roman", FontWeight.BOLD, 48);
@@ -70,9 +83,9 @@ public class GameStage extends Application {
         gameLogic.dropDisk(Player.RED, 2);
         gameLogic.dropDisk(Player.YELLOW, 5);
 
-        ArrayList<String> input = new ArrayList<String>();
+        ArrayList<String> input = new ArrayList<>();
 
-        scene.setOnKeyPressed(
+        gameScene.setOnKeyPressed(
                 new EventHandler<KeyEvent>() {
                     public void handle(KeyEvent e) {
                         String code = e.getCode().toString();
@@ -83,7 +96,7 @@ public class GameStage extends Application {
                     }
                 });
 
-        scene.setOnKeyReleased(
+        gameScene.setOnKeyReleased(
                 new EventHandler<KeyEvent>() {
                     public void handle(KeyEvent e) {
                         String code = e.getCode().toString();
@@ -102,8 +115,8 @@ public class GameStage extends Application {
                 // draw all cells
                 int xCoord = HSPACE;
                 int yCoord = VSPACE;
-                for (int rows = 0; rows < HEIGHT; rows++) {
-                    for (int cols = 0; cols < WIDTH; cols++) {
+                for (int rows = 0; rows < height; rows++) {
+                    for (int cols = 0; cols < width; cols++) {
 
                         switch (gameLogic.getCellValue(rows, cols)) {
                             case REDDISK:
@@ -144,11 +157,9 @@ public class GameStage extends Application {
                     int pointerPosition = gameLogic.getPointerPosition();
                     gc.setFill(Color.BLACK);
                     // these dumb factors come from the font size so that the pointerPosition is still displayed about centered in a column
-                    gc.fillText(Integer.toString(pointerPosition + 1), HSPACE + CELLRADIUS * 0.4 + pointerPosition * (HSPACE + CELLRADIUS), VSPACE + HEIGHT * (VSPACE + CELLRADIUS) + POINTERAREAHEIGHT * 0.75);
+                    gc.fillText(Integer.toString(pointerPosition + 1), HSPACE + CELLRADIUS * 0.4 + pointerPosition * (HSPACE + CELLRADIUS), VSPACE + height * (VSPACE + CELLRADIUS) + POINTERAREAHEIGHT * 0.75);
                 }
             }
         }.start();
-
-        primaryStage.show();
     }
 }
